@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cocolife Habitat Ratings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f9f6;
+      margin: 0;
+      padding: 0;
+      color: #003087;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #00743F;
+      color: white;
+      padding: 15px 25px;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    .icons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .icons i {
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: 0.3s;
+    }
+
+    .icons i:hover {
+      color: #d0f0df;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 60px auto;
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 30px;
+    }
+
+    .search-bar input {
+      width: 60%;
+      padding: 10px 15px;
+      border: 2px solid #00743F;
+      border-radius: 25px;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    .search-bar button {
+      background-color: #00743F;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .search-bar button:hover {
+      background-color: #005b32;
+    }
+
+    .clear-btn {
+      background-color: #E63946;
+    }
+
+    .clear-btn:hover {
+      background-color: #b82c37;
+    }
+
+    .result {
+      display: none;
+      border-top: 2px solid #00743F;
+      padding-top: 20px;
+    }
+
+    .result table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .result th, .result td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .result th {
+      background-color: #00743F;
+      color: white;
+    }
+
+    .no-result {
+      text-align: center;
+      color: #888;
+      margin-top: 15px;
+    }
+	/* ✅ Scaling for different laptop screen sizes without changing design */
+@media screen and (max-width: 1600px) {
+  body {
+    zoom: 0.9; /* shrink slightly */
+  }
+}
+@media screen and (max-width: 1440px) {
+  body {
+    zoom: 0.8;
+  }
+}
+@media screen and (max-width: 1366px) {
+  body {
+    zoom: 0.75;
+  }
+}
+@media screen and (max-width: 1280px) {
+  body {
+    zoom: 0.7;
+  }
+}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Cocolife Habitat Ratings</h1>
+    <div class="icons">
+      <i class="fas fa-search"></i>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by country or continent...">
+      <button id="searchBtn">Search</button>
+      <button id="clearBtn" class="clear-btn">Clear</button>
+    </div>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    const data = [
+  {"country": "Cocolife Habitat Ratings", "continent": "None", "rating": ""},
+  {"country": "Afghanistan", "continent": "ASIA", "rating": "Decline"},
+  {"country": "Mongolia", "continent": "ASIA", "rating": "P1/K"},
+  {"country": "Armenia", "continent": "ASIA", "rating": "P2/K"},
+  {"country": "Myanmar (Burma)", "continent": "ASIA", "rating": "P5/K"},
+  {"country": "Azerbaijan", "continent": "ASIA", "rating": "P2/K"},
+  {"country": "Nepal", "continent": "ASIA", "rating": "IC"},
+  {"country": "Bahrain", "continent": "ASIA", "rating": "P1/K"},
+  {"country": "North Korea", "continent": "ASIA", "rating": "Decline"},
+  {"country": "Bangladesh", "continent": "ASIA", "rating": "P5/K"},
+  {"country": "Oman", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Bhutan", "continent": "ASIA", "rating": "P1/K"},
+  {"country": "Pakistan", "continent": "ASIA", "rating": "IC"},
+  {"country": "Brunei", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Palestine", "continent": "ASIA", "rating": "Decline"},
+  {"country": "Cambodia", "continent": "ASIA", "rating": "P3/K"},
+  {"country": "Qatar", "continent": "ASIA", "rating": "Standard"},
+  {"country": "China", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Russia", "continent": "ASIA", "rating": "P3/K"},
+  {"country": "Georgia", "continent": "ASIA", "rating": "IC"},
+  {"country": "Saudi Arabia", "continent": "ASIA", "rating": "P4/K"},
+  {"country": "Hong Kong", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Singapore", "continent": "ASIA", "rating": "Standard"},
+  {"country": "India", "continent": "ASIA", "rating": "IC"},
+  {"country": "South Korea", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Indonesia", "continent": "ASIA", "rating": "IC"},
+  {"country": "Sri Lanka", "continent": "ASIA", "rating": "P2/K"},
+  {"country": "Iran", "continent": "ASIA", "rating": "P4/K"},
+  {"country": "Syria", "continent": "ASIA", "rating": "Decline"},
+  {"country": "Iraq", "continent": "ASIA", "rating": "Decline"},
+  {"country": "Taiwan", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Israel", "continent": "ASIA", "rating": "Decline"},
+  {"country": "Tajikistan", "continent": "ASIA", "rating": "P5/K"},
+  {"country": "Japan", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Thailand", "continent": "ASIA", "rating": "P3/K"},
+  {"country": "Jordan", "continent": "ASIA", "rating": "P4/K"},
+  {"country": "Timor-Leste (East Timor)", "continent": "ASIA", "rating": "Decline"},
+  {"country": "Kazakhstan", "continent": "ASIA", "rating": "P1/K"},
+  {"country": "Turkey", "continent": "ASIA", "rating": "IC"},
+  {"country": "Kuwait", "continent": "ASIA", "rating": "P2/K *Refer to Balik Manggagawa"},
+  {"country": "Turkmenistan", "continent": "ASIA", "rating": "P2/K"},
+  {"country": "Kyrgyzstan", "continent": "ASIA", "rating": "P3/K"},
+  {"country": "UAE", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Laos", "continent": "ASIA", "rating": "P3/K"},
+  {"country": "Uzbekistan", "continent": "ASIA", "rating": "P5/K"},
+  {"country": "Lebanon", "continent": "ASIA", "rating": "Decline"},
+  {"country": "Vietnam", "continent": "ASIA", "rating": "P1/K"},
+  {"country": "Malaysia", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Yemen", "continent": "ASIA", "rating": "Decline"},
+  {"country": "Maldives", "continent": "ASIA", "rating": "Standard"},
+  {"country": "Algeria", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Libya", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Angola", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Madagascar", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "Benin", "continent": "AFRICA", "rating": "P1/K"},
+  {"country": "Malawi", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "Botswana", "continent": "AFRICA", "rating": "P1/K"},
+  {"country": "Mali", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Burkina Faso", "continent": "AFRICA", "rating": "P5/K"},
+  {"country": "Mauritania", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Burundi", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Mauritius", "continent": "AFRICA", "rating": "Standard"},
+  {"country": "Cape Verde (Cabo Verde)", "continent": "AFRICA", "rating": "P1/K"},
+  {"country": "Morocco", "continent": "AFRICA", "rating": "P1/K"},
+  {"country": "Cameroon", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Mozambique", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "Central African Republic", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Namibia", "continent": "AFRICA", "rating": "P1/K"},
+  {"country": "Chad", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Niger", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Comoros", "continent": "AFRICA", "rating": "P1/K"},
+  {"country": "Nigeria", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Congo,Democratic Republic of the", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Reunion", "continent": "AFRICA", "rating": "Standard"},
+  {"country": "Congo,Republic of", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Rwanda", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Cote d'Ivoire (Ivory Coast)", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Sao Tome and Principe", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "Djibouti", "continent": "AFRICA", "rating": "P5/K"},
+  {"country": "Senegal", "continent": "AFRICA", "rating": "P3/K"},
+  {"country": "Egypt", "continent": "AFRICA", "rating": "IC"},
+  {"country": "Seychelles", "continent": "AFRICA", "rating": "Standard"},
+  {"country": "Equatorial Guinea", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "Sierra Leone", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Eritrea", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Somalia", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Eswatini (Swaziland)", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "South Africa", "continent": "AFRICA", "rating": "P1/K"},
+  {"country": "Ethiopia", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "South Sudan", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Gabon", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "Sudan", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Gambia", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "Tanzania", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "Ghana", "continent": "AFRICA", "rating": "P1/K"},
+  {"country": "Togo", "continent": "AFRICA", "rating": "IC"},
+  {"country": "Guinea", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Tunisia", "continent": "AFRICA", "rating": "IC"},
+  {"country": "Guinea-Bissau", "continent": "AFRICA", "rating": "P3/K"},
+  {"country": "Uganda", "continent": "AFRICA", "rating": "P5/K"},
+  {"country": "Kenya", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Western Sahara", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Lesotho", "continent": "AFRICA", "rating": "P2/K"},
+  {"country": "Zambia", "continent": "AFRICA", "rating": "P5/K"},
+  {"country": "Liberia", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Zimbabwe", "continent": "AFRICA", "rating": "Decline"},
+  {"country": "Antigua and Barbuda", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Saint Lucia", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Bahamas", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Saint Vincent and the Grenadines", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Barbados", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Trinidad and Tobago", "continent": "NORTH AMERICA", "rating": "P1/K"},
+  {"country": "Belize", "continent": "NORTH AMERICA", "rating": "P1/K"},
+  {"country": "Unites States of America (USA)", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Canada", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Costa Rica", "continent": "NORTH AMERICA", "rating": "P1/K"},
+  {"country": "North America Territories", "continent": "NORTH AMERICA", "rating": ""},
+  {"country": "Cuba", "continent": "NORTH AMERICA", "rating": "Decline"},
+  {"country": "Anguilla", "continent": "NORTH AMERICA", "rating": "P1/K"},
+  {"country": "Dominica", "continent": "NORTH AMERICA", "rating": "P1/K"},
+  {"country": "Aruba", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Dominican Republic", "continent": "NORTH AMERICA", "rating": "P1/K"},
+  {"country": "Bermuda", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "El Salvador", "continent": "NORTH AMERICA", "rating": "P2/K"},
+  {"country": "British Virgin Islands", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Grenada", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Cayman Islands", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Guatemala", "continent": "NORTH AMERICA", "rating": "P2/K"},
+  {"country": "Greenland", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Haiti", "continent": "NORTH AMERICA", "rating": "Decline"},
+  {"country": "Guadeloupe", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Honduras", "continent": "NORTH AMERICA", "rating": "P2/K"},
+  {"country": "Martinique", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Jamaica", "continent": "NORTH AMERICA", "rating": "P1/K"},
+  {"country": "Montserrat", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Mexico", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Puerto Rico", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Nicaragua", "continent": "NORTH AMERICA", "rating": "P2/K"},
+  {"country": "Saint Martin", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Panama", "continent": "NORTH AMERICA", "rating": "P2/K"},
+  {"country": "Turks and Caicos", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Saint Kitts and Nevis", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "US Virgin Island", "continent": "NORTH AMERICA", "rating": "Standard"},
+  {"country": "Argentina", "continent": "SOUTH AMERICA", "rating": "Standard"},
+  {"country": "Peru", "continent": "SOUTH AMERICA", "rating": "P1/K"},
+  {"country": "Bolivia", "continent": "SOUTH AMERICA", "rating": "P1/K"},
+  {"country": "Suriname", "continent": "SOUTH AMERICA", "rating": "P1/K"},
+  {"country": "Brazil", "continent": "SOUTH AMERICA", "rating": "Standard"},
+  {"country": "Uruguay", "continent": "SOUTH AMERICA", "rating": "P1/K"},
+  {"country": "Chile", "continent": "SOUTH AMERICA", "rating": "Standard"},
+  {"country": "Venezuela", "continent": "SOUTH AMERICA", "rating": "IC"},
+  {"country": "Colombia", "continent": "SOUTH AMERICA", "rating": "Decline"},
+  {"country": "Ecuador", "continent": "SOUTH AMERICA", "rating": "IC"},
+  {"country": "South America Territories", "continent": "SOUTH AMERICA", "rating": ""},
+  {"country": "Guyana", "continent": "SOUTH AMERICA", "rating": "P1/K"},
+  {"country": "Falkland Islands", "continent": "SOUTH AMERICA", "rating": "Standard"},
+  {"country": "Paraguay", "continent": "SOUTH AMERICA", "rating": "P1/K"},
+  {"country": "French Guiana", "continent": "SOUTH AMERICA", "rating": "P1/K"},
+  {"country": "Australia", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Vanuatu", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Christmas Islands", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Other Territories", "continent": "OCEANIA", "rating": ""},
+  {"country": "Fiji", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "American Samoa", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Kiribati", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Cook Islands", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Marshall Islands", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "French Polynesia", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Micronesia", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Guam", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Nauru", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "New Caledonia", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "New Zealand", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Niue", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Palau", "continent": "OCEANIA", "rating": "IC"},
+  {"country": "Norfolk Island", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Papua New Guinea", "continent": "OCEANIA", "rating": "P2/K"},
+  {"country": "Northern Mariana Islands", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Solomon Islands", "continent": "OCEANIA", "rating": "P1/K"},
+  {"country": "Pitcairn Islands", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Tonga", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Tokelau", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Tuvalu", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Wallis and Futuna", "continent": "OCEANIA", "rating": "Standard"},
+  {"country": "Albania", "continent": "EUROPE", "rating": "P1/K"},
+  {"country": "Latvia", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Andorra", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Liechtenstein", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Austria", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Lithuania", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Belarus", "continent": "EUROPE", "rating": "P1/K"},
+  {"country": "Luxemburg", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Belgium", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Malta", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Bosnia and Herzegovina", "continent": "EUROPE", "rating": "P1/K"},
+  {"country": "Moldova", "continent": "EUROPE", "rating": "P1/K"},
+  {"country": "Bulgaria", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Monaco", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Croatia", "continent": "EUROPE", "rating": "P1/K"},
+  {"country": "Montenegro", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Cyprus", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Netherlands", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Czech Republic", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "North Macedonia", "continent": "EUROPE", "rating": "P1/K"},
+  {"country": "Chechnya Republic", "continent": "EUROPE", "rating": "Decline"},
+  {"country": "Norway", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Denmark", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Poland", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Estonia", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Portugal", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Faeroe Islands", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Romania", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Finland", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "San Marino", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "France", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Serbia", "continent": "EUROPE", "rating": "P1/K"},
+  {"country": "Germany", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Slovakia", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Gibraltar", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Slovenia", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Greece", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Spain", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Hungary", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Sweden", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Iceland", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Switzerland", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Ireland", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Ukraine", "continent": "EUROPE", "rating": "Decline"},
+  {"country": "Italy", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "United Kingdom", "continent": "EUROPE", "rating": "Standard"},
+  {"country": "Kosovo", "continent": "EUROPE", "rating": "P4/K"},
+  {"country": "Vatican City", "continent": "EUROPE", "rating": "Standard"},
+];
+
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const resultDiv = document.getElementById("result");
+
+    function searchCountry() {
+      const query = searchInput.value.trim().toLowerCase();
+      if (!query) return;
+
+      const filtered = data.filter(item =>
+        item.country.toLowerCase().includes(query) ||
+        item.continent.toLowerCase().includes(query)
+      );
+
+      if (filtered.length > 0) {
+        let html = "<table><tr><th>Country</th><th>Continent</th><th>Rating</th></tr>";
+        filtered.forEach(item => {
+          html += `<tr><td>${item.country}</td><td>${item.continent}</td><td>${item.rating}</td></tr>`;
+        });
+        html += "</table>";
+        resultDiv.innerHTML = html;
+        resultDiv.style.display = "block";
+      } else {
+        resultDiv.innerHTML = '<p class="no-result">No results found.</p>';
+        resultDiv.style.display = "block";
+      }
+    }
+
+    searchBtn.addEventListener("click", searchCountry);
+
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      resultDiv.style.display = "none";
+    });
+
+    // ✅ Press Enter to trigger search
+    searchInput.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        searchCountry();
+      }
+    });
+  </script>
+</body>
+</html>

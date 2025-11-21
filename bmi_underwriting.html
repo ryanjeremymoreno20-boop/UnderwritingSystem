@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMI Underwriting Reference Tool</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0096c7, #00b894);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      background: #fff;
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 30px;
+      border-radius: 0px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #007b83;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      grid-column: span 2;
+    }
+
+    p {
+      text-align: center;
+      color: #555;
+      margin-bottom: 40px;
+      grid-column: span 2;
+      font-size: 1rem;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px 30px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #006d77;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input, select {
+      padding: 5px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: #00b894;
+      box-shadow: 0 0 6px rgba(0,184,148,0.4);
+      outline: none;
+    }
+
+    .btn-container {
+      grid-column: span 2;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    button {
+      background: linear-gradient(135deg, #00b894, #0096c7);
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    button.clear {
+      background: #b2bec3;
+      color: #fff;
+    }
+
+    .icon-bar {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .icon-bar button {
+      background: #e0f7f4;
+      border-radius: 50%;
+      padding: 10px;
+      color: #007b83;
+      font-size: 20px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .icon-bar button:hover {
+      background: #00b894;
+      color: white;
+    }
+
+    #resultContainer {
+      padding: 0px;
+      border-radius: 5px;
+      background: #f7f7f7;
+      min-height: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    #resultContainer h2 {
+      margin-top: 0;
+      color: #007b83;
+      text-align: center;
+      margin-bottom: 0px;
+    }
+
+    #resultContainer p {
+      font-size: 16px;
+      margin: 0px 0;
+    }
+
+    .highlight {
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      color: white;
+      margin-top: 40px;
+      padding: 20px;
+    }
+
+    @media print {
+      body { background: white; }
+      .icon-bar, .btn-container, footer { display: none !important; }
+      .container { box-shadow: none; border: none; margin: 0; padding: 30px; }
+      #resultContainer { background: white; }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="icon-bar">
+    <button title="Back" onclick="window.location.href='Underwriting_dashboard.html'">🔙</button>
+    <button id="printBtn" title="Print">🖨️</button>
+  </div>
+
+  <h1>BMI Underwriting Reference Tool</h1>
+  <p>Compute BMI, view classification, and medical requirements per underwriting guidelines.</p>
+
+  <!-- LEFT SIDE FORM -->
+  <div>
+    <form id="bmiForm">
+
+      <div>
+        <label for="gender">Gender:</label>
+        <select id="gender" required>
+          <option value="">Select</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="age">Age:</label>
+        <input type="number" id="age" required min="0" placeholder="Enter age">
+      </div>
+
+      <div>
+        <label for="weight">Weight:</label>
+        <input type="number" step="0.01" id="weight" required placeholder="Enter weight">
+      </div>
+
+      <div>
+        <label for="weight_unit">Unit:</label>
+        <select id="weight_unit">
+          <option value="kg">Kilogram (kg)</option>
+          <option value="lb">Pounds (lb)</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="height">Height:</label>
+        <div id="height-fields">
+          <input type="number" step="0.01" id="height" required placeholder="Enter height">
+        </div>
+      </div>
+
+      <div>
+        <label for="height_unit">Unit:</label>
+        <select id="height_unit">
+          <option value="cm">Centimeter (cm)</option>
+          <option value="ft">Feet (ft & in)</option>
+        </select>
+      </div>
+
+      <div class="btn-container">
+        <button type="button" onclick="calculateBMI()">Calculate BMI</button>
+        <button type="button" class="clear" onclick="clearForm()">Clear</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- RIGHT SIDE RESULT -->
+  <div id="resultContainer"></div>
+
+</div>
+
+<footer>
+  © <span id="year"></span> Cocolife Underwriting Department | BMI Reference Tool
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  document.getElementById("printBtn").addEventListener("click", function () {
+    window.print();
+  });
+
+  // AUTO-CONVERT WEIGHT
+  document.getElementById("weight_unit").addEventListener("change", function () {
+    let weight = parseFloat(document.getElementById("weight").value);
+    if (!weight) return;
+    let unit = this.value;
+    if (unit === "lb") document.getElementById("weight").value = (weight * 2.20462).toFixed(2);
+    else document.getElementById("weight").value = (weight / 2.20462).toFixed(2);
+  });
+
+  // AUTO-CONVERT HEIGHT
+  document.getElementById("height_unit").addEventListener("change", function () {
+    const unit = this.value;
+    const container = document.getElementById("height-fields");
+
+    if (unit === "ft") {
+      const heightCm = parseFloat(document.getElementById("height").value);
+      let ft = "", inch = "";
+      if (!isNaN(heightCm)) {
+        const totalInches = heightCm / 2.54;
+        ft = Math.floor(totalInches / 12);
+        inch = (totalInches % 12).toFixed(2);
+      }
+      container.innerHTML = `
+        <div style="display:flex; gap:10px;">
+          <input type="number" step="1" min="0" id="height_ft" placeholder="ft" value="${ft}">
+          <input type="number" step="0.01" min="0" id="height_in" placeholder="in" value="${inch}">
+        </div>`;
+    } else {
+      const ft = parseFloat(document.getElementById("height_ft")?.value) || 0;
+      const inch = parseFloat(document.getElementById("height_in")?.value) || 0;
+      const heightCm = (ft * 30.48 + inch * 2.54).toFixed(2);
+      container.innerHTML = `<input type="number" step="0.01" id="height" required placeholder="Enter height" value="${heightCm}">`;
+    }
+  });
+
+  function calculateBMI() {
+    const gender = document.getElementById("gender").value;
+    const age = parseInt(document.getElementById("age").value);
+    const weightUnit = document.getElementById("weight_unit").value;
+    const heightUnit = document.getElementById("height_unit").value;
+    let weight = parseFloat(document.getElementById("weight").value);
+    let height;
+
+    if (!gender || !age || !weight) { alert("Please fill all required fields."); return; }
+
+    if (weightUnit === "lb") weight *= 0.453592;
+
+    if (heightUnit === "cm") {
+      height = parseFloat(document.getElementById("height").value);
+    } else {
+      const ft = parseFloat(document.getElementById("height_ft").value) || 0;
+      const inch = parseFloat(document.getElementById("height_in").value) || 0;
+      height = (ft * 30.48) + (inch * 2.54);
+    }
+
+    const height_m = height / 100;
+    const bmi = (weight / (height_m * height_m)).toFixed(2);
+
+    let classification = "", debits = "", requirements = "";
+    if (bmi < 16) { classification = "Postpone (Underweight)"; debits = "-"; requirements = "FME/RU, CXR"; }
+    else if (bmi <= 17.49) { classification = "Underweight"; debits = "25 debits"; requirements = "FME/RU"; }
+    else if (bmi <= 29.99) { classification = "Normal Build"; debits = "0 debit"; requirements = "None"; }
+    else if (bmi <= 32.99) { classification = "Obesity Class I"; debits = "25 debits"; requirements = "FME/RU"; }
+    else if (bmi <= 34.99) { classification = "Obesity Class II"; debits = "50 debits"; requirements = "FME/RU, FBS, HBA1C"; }
+    else if (bmi <= 36.9) { classification = "Obesity Class II"; debits = "75 debits"; requirements = "FME/RU, FBS, HBA1C"; }
+    else if (bmi <= 39.99) { classification = "Obesity Class III"; debits = "100 debits"; requirements = "FME/RU, FBS, HBA1C"; }
+    else if (bmi <= 43.99) { classification = "Obesity Class III"; debits = "125 debits"; requirements = "FME/RU, FBS, HBA1C, Cholesterol, Triglycerides, SGOT, SGPT"; }
+    else if (bmi <= 46.9) { classification = "Obesity Class III"; debits = "150 debits"; requirements = "FME/RU, FBS, HBA1C, Cholesterol, Triglycerides, SGOT, SGPT"; }
+    else { classification = "Postpone (Severe Obesity)"; debits = "-"; requirements = "FME/RU, FBS, HBA1C, Cholesterol, Triglycerides, SGOT, SGPT"; }
+
+    document.getElementById("resultContainer").innerHTML = `
+      <h2>Result Summary</h2>
+      <p><strong>Gender:</strong> ${gender}</p>
+      <p><strong>Age:</strong> ${age}</p>
+      <p><strong>BMI:</strong> <span class='highlight'>${bmi}</span></p>
+      <p><strong>Classification:</strong> ${classification}</p>
+      <p><strong>Risk Rating:</strong> ${debits}</p>
+      <p><strong>Medical Requirements:</strong> ${requirements}</p>
+    `;
+  }
+
+  function clearForm() {
+    document.getElementById("bmiForm").reset();
+    document.getElementById("resultContainer").innerHTML = "";
+    document.getElementById("height-fields").innerHTML = `<input type="number" step="0.01" id="height" required placeholder="Enter height">`;
+  }
+</script>
+</body>
+</html>
